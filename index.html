@@ -435,7 +435,7 @@
     <footer style="text-align: center; margin-top: 30px; padding: 20px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.08); border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.3s ease;">
         <small style="color: #718096; font-size: 14px; font-weight: 500;">
             <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 600;">Created by Sobhan</span> 
-            with ❤️ & Code
+            with vsCode
         </small>
     </footer>
 
@@ -698,8 +698,8 @@
                 video.style.display = 'block';
                 placeholder.style.display = 'none';
                 
-                // ذخیره در سرور
-                saveToServer('videoUrl', videoUrl);
+                // ذخیره در گیت‌هاب
+                saveToGitHub('videoUrl', videoUrl);
             }
         }
 
@@ -713,22 +713,22 @@
                 img.style.display = 'block';
                 placeholder.style.display = 'none';
                 
-                // ذخیره در سرور
-                saveToServer('imageUrl', imageUrl);
+                // ذخیره در گیت‌هاب
+                saveToGitHub('imageUrl', imageUrl);
             }
         }
 
-        // سیستم ذخیره‌سازی داده‌ها در سرور
-        const SERVER_CONFIG = {
-            API_BASE_URL: '/api/school-data',
-            ENDPOINTS: {
-                SAVE: '/save',
-                LOAD: '/load'
-            }
+        // تنظیمات گیت‌هاب
+        const GITHUB_CONFIG = {
+            OWNER: 'your-username',  // نام کاربری گیت‌هاب شما
+            REPO: 'your-repo-name',  // نام مخزن گیت‌هاب شما
+            FILE_PATH: 'index.html', // مسیر فایل در مخزن
+            BRANCH: 'main',          // نام شاخه (معمولاً main یا master)
+            TOKEN: ''                // توکن دسترسی گیت‌هاب (باید توسط کاربر تنظیم شود)
         };
 
-        // شبیه‌سازی داده‌های سرور (در حالت واقعی از پایگاه داده استفاده می‌شود)
-        let serverData = {
+        // داده‌های پیش‌فرض
+        let websiteData = {
             videoUrl: '',
             imageUrl: '',
             occasionsText: '• هفته دفاع مقدس<br>• روز معلم<br>• هفته کتاب و کتابخوانی<br>• جشن یلدا',
@@ -737,79 +737,301 @@
             educationNewsText: '• تغییرات تقویم آموزشی<br>• دستورالعمل‌های جدید<br>• برنامه‌های آموزشی ویژه<br>• اطلاعیه‌های مهم وزارت'
         };
 
-        // ذخیره داده در سرور
-        async function saveToServer(dataType, value) {
+        // ذخیره تغییرات در گیت‌هاب
+        async function saveToGitHub(dataType, value) {
             try {
-                // شبیه‌سازی درخواست به سرور
-                showInlineMessage('در حال ذخیره در سرور...', 'info');
+                if (!GITHUB_CONFIG.TOKEN) {
+                    showGitHubSetupDialog();
+                    return { success: false, error: 'GitHub token not configured' };
+                }
+
+                showInlineMessage('در حال ذخیره در گیت‌هاب...', 'info');
                 
-                // تاخیر برای شبیه‌سازی شبکه
-                await new Promise(resolve => setTimeout(resolve, 500));
+                // به‌روزرسانی داده محلی
+                websiteData[dataType] = value;
                 
-                // ذخیره در شبیه‌سازی سرور
-                serverData[dataType] = value;
+                // دریافت محتوای فعلی فایل از گیت‌هاب
+                const currentFileResponse = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.OWNER}/${GITHUB_CONFIG.REPO}/contents/${GITHUB_CONFIG.FILE_PATH}`, {
+                    headers: {
+                        'Authorization': `token ${GITHUB_CONFIG.TOKEN}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+
+                if (!currentFileResponse.ok) {
+                    throw new Error('خطا در دریافت فایل از گیت‌هاب');
+                }
+
+                const currentFile = await currentFileResponse.json();
+                let htmlContent = atob(currentFile.content);
                 
-                // شبیه‌سازی پاسخ موفق سرور
-                showInlineMessage('✅ تغییرات در سرور ذخیره شد!', 'success');
+                // به‌روزرسانی محتوای HTML با داده‌های جدید
+                htmlContent = updateHTMLContent(htmlContent, dataType, value);
                 
-                return { success: true, message: 'داده با موفقیت ذخیره شد' };
+                // ارسال فایل به‌روزرسانی شده به گیت‌هاب
+                const updateResponse = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.OWNER}/${GITHUB_CONFIG.REPO}/contents/${GITHUB_CONFIG.FILE_PATH}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${GITHUB_CONFIG.TOKEN}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `به‌روزرسانی ${dataType} از طریق وب‌سایت`,
+                        content: btoa(unescape(encodeURIComponent(htmlContent))),
+                        sha: currentFile.sha,
+                        branch: GITHUB_CONFIG.BRANCH
+                    })
+                });
+
+                if (!updateResponse.ok) {
+                    throw new Error('خطا در به‌روزرسانی فایل در گیت‌هاب');
+                }
+
+                showInlineMessage('✅ تغییرات در گیت‌هاب ذخیره شد!', 'success');
+                return { success: true, message: 'فایل با موفقیت در گیت‌هاب به‌روزرسانی شد' };
+                
             } catch (error) {
-                showInlineMessage('❌ خطا در ذخیره‌سازی در سرور!', 'error');
+                console.error('GitHub save error:', error);
+                showInlineMessage('❌ خطا در ذخیره‌سازی در گیت‌هاب!', 'error');
                 return { success: false, error: error.message };
             }
         }
 
-        // بارگذاری داده از سرور
-        async function loadFromServer() {
-            try {
-                // شبیه‌سازی درخواست به سرور
-                showInlineMessage('در حال بارگذاری از سرور...', 'info');
-                
-                // تاخیر برای شبیه‌سازی شبکه
-                await new Promise(resolve => setTimeout(resolve, 300));
-                
-                // بارگذاری داده‌ها از شبیه‌سازی سرور
-                if (serverData.videoUrl) {
-                    showVideo(serverData.videoUrl);
-                }
-                
-                if (serverData.imageUrl) {
-                    showImage(serverData.imageUrl);
-                }
-                
-                // بارگذاری متن‌ها
-                const occasionsElement = document.querySelector('.occasions .box-content');
-                if (occasionsElement && serverData.occasionsText) {
-                    occasionsElement.innerHTML = serverData.occasionsText;
-                }
+        // به‌روزرسانی محتوای HTML
+        function updateHTMLContent(htmlContent, dataType, value) {
+            switch(dataType) {
+                case 'videoUrl':
+                    // به‌روزرسانی URL ویدیو در کد HTML
+                    const videoRegex = /videoUrl:\s*'[^']*'/;
+                    htmlContent = htmlContent.replace(videoRegex, `videoUrl: '${value}'`);
+                    break;
+                case 'imageUrl':
+                    // به‌روزرسانی URL عکس در کد HTML
+                    const imageRegex = /imageUrl:\s*'[^']*'/;
+                    htmlContent = htmlContent.replace(imageRegex, `imageUrl: '${value}'`);
+                    break;
+                case 'occasionsText':
+                    // به‌روزرسانی متن مناسبت‌ها
+                    const occasionsRegex = /occasionsText:\s*'[^']*'/;
+                    htmlContent = htmlContent.replace(occasionsRegex, `occasionsText: '${value.replace(/'/g, "\\'")}'`);
+                    break;
+                case 'schoolNewsText':
+                    // به‌روزرسانی اخبار مدرسه
+                    const schoolNewsRegex = /schoolNewsText:\s*'[^']*'/;
+                    htmlContent = htmlContent.replace(schoolNewsRegex, `schoolNewsText: '${value.replace(/'/g, "\\'")}'`);
+                    break;
+                case 'staffText':
+                    // به‌روزرسانی کادر اجرایی
+                    const staffRegex = /staffText:\s*'[^']*'/;
+                    htmlContent = htmlContent.replace(staffRegex, `staffText: '${value.replace(/'/g, "\\'")}'`);
+                    break;
+                case 'educationNewsText':
+                    // به‌روزرسانی اخبار آموزش و پرورش
+                    const educationRegex = /educationNewsText:\s*'[^']*'/;
+                    htmlContent = htmlContent.replace(educationRegex, `educationNewsText: '${value.replace(/'/g, "\\'")}'`);
+                    break;
+            }
+            return htmlContent;
+        }
 
-                const schoolNewsElement = document.querySelector('.school-news .box-content');
-                if (schoolNewsElement && serverData.schoolNewsText) {
-                    schoolNewsElement.innerHTML = serverData.schoolNewsText;
-                }
+        // نمایش دیالوگ تنظیم گیت‌هاب
+        function showGitHubSetupDialog() {
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                z-index: 2000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
 
-                const staffElement = document.querySelector('.staff .box-content');
-                if (staffElement && serverData.staffText) {
-                    staffElement.innerHTML = serverData.staffText;
-                }
+            const dialog = document.createElement('div');
+            dialog.className = 'management-dialog';
+            dialog.style.cssText = `
+                background: white;
+                padding: 30px;
+                border-radius: 12px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                text-align: center;
+                max-width: 600px;
+                margin: 20px;
+                width: 90%;
+            `;
 
-                const educationNewsElement = document.querySelector('.education-news .box-content');
-                if (educationNewsElement && serverData.educationNewsText) {
-                    educationNewsElement.innerHTML = serverData.educationNewsText;
+            dialog.innerHTML = `
+                <div style="color: #333; font-size: 18px; margin-bottom: 20px; font-weight: bold;">⚙️ تنظیم اتصال به گیت‌هاب</div>
+                <div style="color: #666; font-size: 14px; margin-bottom: 15px; text-align: right; line-height: 1.6;">
+                    برای ذخیره تغییرات در گیت‌هاب، لطفاً اطلاعات زیر را وارد کنید:
+                </div>
+                
+                <div style="margin-bottom: 15px; text-align: right;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">نام کاربری گیت‌هاب:</label>
+                    <input type="text" id="github-owner" placeholder="your-username" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+                </div>
+                
+                <div style="margin-bottom: 15px; text-align: right;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">نام مخزن (Repository):</label>
+                    <input type="text" id="github-repo" placeholder="your-repo-name" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+                </div>
+                
+                <div style="margin-bottom: 15px; text-align: right;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">نام فایل:</label>
+                    <input type="text" id="github-file" value="index.html" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+                </div>
+                
+                <div style="margin-bottom: 15px; text-align: right;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">توکن دسترسی گیت‌هاب:</label>
+                    <input type="password" id="github-token" placeholder="ghp_xxxxxxxxxxxx" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+                </div>
+                
+                <div style="background: #f0f8ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: right; font-size: 12px; color: #333;">
+                    <strong>نحوه دریافت توکن:</strong><br>
+                    1. به GitHub.com بروید<br>
+                    2. Settings → Developer settings → Personal access tokens<br>
+                    3. Generate new token (classic)<br>
+                    4. دسترسی "repo" را انتخاب کنید<br>
+                    5. توکن را کپی کنید
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <button id="save-github-config" style="background: #4CAF50; color: white; padding: 12px 25px; border: none; border-radius: 8px; margin: 0 5px; cursor: pointer; font-weight: bold; font-size: 14px;">ذخیره تنظیمات</button>
+                    <button id="cancel-github-config" style="background: #f44336; color: white; padding: 12px 25px; border: none; border-radius: 8px; margin: 0 5px; cursor: pointer; font-weight: bold; font-size: 14px;">لغو</button>
+                </div>
+            `;
+
+            overlay.appendChild(dialog);
+            document.body.appendChild(overlay);
+
+            document.getElementById('save-github-config').onclick = () => {
+                GITHUB_CONFIG.OWNER = document.getElementById('github-owner').value.trim();
+                GITHUB_CONFIG.REPO = document.getElementById('github-repo').value.trim();
+                GITHUB_CONFIG.FILE_PATH = document.getElementById('github-file').value.trim();
+                GITHUB_CONFIG.TOKEN = document.getElementById('github-token').value.trim();
+                
+                if (GITHUB_CONFIG.OWNER && GITHUB_CONFIG.REPO && GITHUB_CONFIG.TOKEN) {
+                    // ذخیره تنظیمات در localStorage
+                    localStorage.setItem('githubConfig', JSON.stringify(GITHUB_CONFIG));
+                    showInlineMessage('تنظیمات گیت‌هاب ذخیره شد!', 'success');
+                    document.body.removeChild(overlay);
+                } else {
+                    showInlineMessage('لطفاً تمام فیلدها را پر کنید!', 'error');
                 }
-                
-                showInlineMessage('✅ داده‌ها از سرور بارگذاری شد!', 'success');
-                
-                return { success: true, data: serverData };
-            } catch (error) {
-                showInlineMessage('❌ خطا در بارگذاری از سرور!', 'error');
-                return { success: false, error: error.message };
+            };
+
+            document.getElementById('cancel-github-config').onclick = () => {
+                document.body.removeChild(overlay);
+            };
+
+            overlay.onclick = (e) => {
+                if (e.target === overlay) {
+                    document.body.removeChild(overlay);
+                }
+            };
+        }
+
+        // بارگذاری تنظیمات گیت‌هاب از localStorage
+        function loadGitHubConfig() {
+            const savedConfig = localStorage.getItem('githubConfig');
+            if (savedConfig) {
+                const config = JSON.parse(savedConfig);
+                Object.assign(GITHUB_CONFIG, config);
             }
         }
 
-        // بارگذاری داده‌ها هنگام شروع
-        document.addEventListener('DOMContentLoaded', loadFromServer);
-        loadFromServer(); // اجرای فوری برای اطمینان
+        // بارگذاری داده‌ها از گیت‌هاب
+        async function loadFromGitHub() {
+            try {
+                if (!GITHUB_CONFIG.TOKEN) {
+                    // بارگذاری داده‌های پیش‌فرض
+                    loadDefaultData();
+                    return;
+                }
+
+                showInlineMessage('در حال بارگذاری از گیت‌هاب...', 'info');
+                
+                const response = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.OWNER}/${GITHUB_CONFIG.REPO}/contents/${GITHUB_CONFIG.FILE_PATH}`, {
+                    headers: {
+                        'Authorization': `token ${GITHUB_CONFIG.TOKEN}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+
+                if (response.ok) {
+                    const file = await response.json();
+                    const htmlContent = atob(file.content);
+                    
+                    // استخراج داده‌ها از محتوای HTML
+                    extractDataFromHTML(htmlContent);
+                    
+                    showInlineMessage('✅ داده‌ها از گیت‌هاب بارگذاری شد!', 'success');
+                } else {
+                    throw new Error('فایل در گیت‌هاب یافت نشد');
+                }
+                
+            } catch (error) {
+                console.error('GitHub load error:', error);
+                showInlineMessage('❌ خطا در بارگذاری از گیت‌هاب!', 'error');
+                loadDefaultData();
+            }
+        }
+
+        // استخراج داده‌ها از محتوای HTML
+        function extractDataFromHTML(htmlContent) {
+            // استخراج URL ویدیو
+            const videoMatch = htmlContent.match(/videoUrl:\s*'([^']*)'/);
+            if (videoMatch && videoMatch[1]) {
+                websiteData.videoUrl = videoMatch[1];
+                showVideo(videoMatch[1]);
+            }
+
+            // استخراج URL عکس
+            const imageMatch = htmlContent.match(/imageUrl:\s*'([^']*)'/);
+            if (imageMatch && imageMatch[1]) {
+                websiteData.imageUrl = imageMatch[1];
+                showImage(imageMatch[1]);
+            }
+
+            // بارگذاری سایر داده‌ها...
+            loadDefaultData();
+        }
+
+        // بارگذاری داده‌های پیش‌فرض
+        function loadDefaultData() {
+            // بارگذاری متن‌ها
+            const occasionsElement = document.querySelector('.occasions .box-content');
+            if (occasionsElement && websiteData.occasionsText) {
+                occasionsElement.innerHTML = websiteData.occasionsText;
+            }
+
+            const schoolNewsElement = document.querySelector('.school-news .box-content');
+            if (schoolNewsElement && websiteData.schoolNewsText) {
+                schoolNewsElement.innerHTML = websiteData.schoolNewsText;
+            }
+
+            const staffElement = document.querySelector('.staff .box-content');
+            if (staffElement && websiteData.staffText) {
+                staffElement.innerHTML = websiteData.staffText;
+            }
+
+            const educationNewsElement = document.querySelector('.education-news .box-content');
+            if (educationNewsElement && websiteData.educationNewsText) {
+                educationNewsElement.innerHTML = websiteData.educationNewsText;
+            }
+        }
+
+        // بارگذاری تنظیمات و داده‌ها هنگام شروع
+        document.addEventListener('DOMContentLoaded', () => {
+            loadGitHubConfig();
+            loadFromGitHub();
+        });
+        loadGitHubConfig(); // بارگذاری تنظیمات
+        loadFromGitHub(); // بارگذاری داده‌ها
 
         // مدیریت بخش مدیران
         const MANAGEMENT_PASSWORD = "allame1303";
@@ -1231,7 +1453,7 @@
                 }
                 
                 if (dataType) {
-                    saveToServer(dataType, newText);
+                    saveToGitHub(dataType, newText);
                 }
                 
                 showInlineMessage(`${title} با موفقیت به‌روزرسانی شد!`, 'success');
@@ -1312,5 +1534,5 @@
 
 
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98fdb9bd04577093',t:'MTc2MDY4MjM5OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98fdc5d9135ad25d',t:'MTc2MDY4Mjg5NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
