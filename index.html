@@ -5,59 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مدرسه علامه طباطبائی</title>
     <style>
-        body {
+        * {
             box-sizing: border-box;
+        }
+        
+        body {
             font-family: 'Tahoma', 'Arial', sans-serif;
             margin: 0;
             padding: 10px;
-            background: #f8f8f8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            line-height: 1.6;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             padding: 20px 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-            border: 2px solid #333;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
         }
 
-        .header-left {
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
-            background: white;
-            padding: 15px 25px;
-            border-radius: 12px;
-            border: 2px solid #333;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        .header:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+
+        .header-left, .header-right {
+            font-size: 16px;
+            font-weight: 600;
+            color: #4a5568;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 12px 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .header-left:hover, .header-right:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
         }
 
         .header-center {
-            font-size: 28px;
-            font-weight: bold;
-            color: #333;
+            font-size: 32px;
+            font-weight: 700;
+            color: #2d3748;
             text-align: center;
-            background: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             padding: 20px 40px;
-            border-radius: 15px;
-            border: 2px solid #333;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .header-right {
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
-            background: white;
-            padding: 15px 25px;
-            border-radius: 12px;
-            border: 2px solid #333;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            position: relative;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .main-container {
@@ -68,30 +77,45 @@
 
         .video-section {
             flex: 2;
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border: 2px solid #333;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .video-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
         }
 
         .video-container {
             width: 100%;
-            height: 300px;
-            background: #f5f5f5;
-            border: 2px dashed #bdbdbd;
-            border-radius: 12px;
+            height: 320px;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border: 2px dashed rgba(160, 174, 192, 0.6);
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #666;
+            color: #718096;
             font-size: 16px;
             position: relative;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .video-container:hover {
+            border-color: rgba(102, 126, 234, 0.6);
+            background: linear-gradient(135deg, #f0f4ff 0%, #e6f0ff 100%);
         }
 
         .video-placeholder {
             text-align: center;
-            line-height: 1.6;
+            line-height: 1.8;
+            font-weight: 500;
         }
 
         .sidebar {
@@ -102,26 +126,59 @@
         }
 
         .sidebar-box {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border: 2px solid #333;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 18px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 18px 18px 0 0;
+        }
+
+        .sidebar-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.12);
         }
 
         .box-title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #f0f0f0;
-            color: #333;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+            color: #2d3748;
+            position: relative;
+        }
+
+        .box-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 1px;
         }
 
         .box-content {
-            color: #666;
-            line-height: 1.6;
+            color: #4a5568;
+            line-height: 1.8;
             font-size: 14px;
+            font-weight: 500;
         }
 
         /* Mobile Responsive Styles */
@@ -290,7 +347,8 @@
     <main class="main-container">
         <section class="video-section">
             <div class="video-container">
-                <div class="video-placeholder">
+                <iframe id="school-video" src="" style="width: 100%; height: 100%; border: none; border-radius: 10px; display: none;" allowfullscreen onerror="this.style.display='none'; document.getElementById('video-placeholder').style.display='block';"></iframe>
+                <div id="video-placeholder" class="video-placeholder">
                     📹<br>
                     محل نمایش ویدیو<br>
                     <small>شما می‌توانید URL ویدیو را اینجا قرار دهید</small>
@@ -306,11 +364,13 @@
                 </div>
             </div>
             
-            <div style="margin-top: 20px; text-align: center;">
-                <button onclick="showCommentBox()" style="display: inline-block; background: white; color: #333; padding: 15px 30px; border: 2px solid #333; border-radius: 12px; font-weight: bold; font-size: 16px; box-shadow: 0 3px 10px rgba(0,0,0,0.1); transition: all 0.3s ease; cursor: pointer; margin-left: 10px;" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='white'">
-                    نظرات خود را در این بخش وارد کنید
+            <div style="margin-top: 25px; text-align: center; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <button onclick="window.open('https://survey.porsline.ir/s/4QHSAlHM', '_blank', 'noopener,noreferrer')" style="display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 16px 28px; border: none; border-radius: 50px; font-weight: 600; font-size: 15px; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3); transition: all 0.3s ease; cursor: pointer; position: relative; overflow: hidden;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 35px rgba(102, 126, 234, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px rgba(102, 126, 234, 0.3)'">
+                    <span style="font-size: 18px;">💬</span>
+                    نظرات خود را ثبت کنید
                 </button>
-                <button onclick="showManagementLogin()" style="display: inline-block; background: #2196F3; color: white; padding: 15px 30px; border: 2px solid #1976D2; border-radius: 12px; font-weight: bold; font-size: 16px; box-shadow: 0 3px 10px rgba(0,0,0,0.1); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.background='#1976D2'" onmouseout="this.style.background='#2196F3'">
+                <button onclick="showManagementLogin()" style="display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 16px 28px; border: none; border-radius: 50px; font-weight: 600; font-size: 15px; box-shadow: 0 8px 25px rgba(79, 172, 254, 0.3); transition: all 0.3s ease; cursor: pointer; position: relative; overflow: hidden;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 35px rgba(79, 172, 254, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px rgba(79, 172, 254, 0.3)'">
+                    <span style="font-size: 18px;">⚙️</span>
                     بخش مدیران
                 </button></div>
                 
@@ -372,8 +432,11 @@
         </aside>
     </main>
 
-    <footer style="text-align: center; margin-top: 20px; padding: 15px; background: white; border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.1); border: 2px solid #ddd;">
-        <small style="color: #666; font-size: 14px;">Created by Sobhan with code Vs</small>
+    <footer style="text-align: center; margin-top: 30px; padding: 20px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.08); border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.3s ease;">
+        <small style="color: #718096; font-size: 14px; font-weight: 500;">
+            <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 600;">Created by Sobhan</span> 
+            with vsCode
+        </small>
     </footer>
 
     <script>
@@ -612,6 +675,28 @@
             };
         }
 
+        // تابع نمایش ویدیو
+        function showVideo(videoUrl) {
+            if (videoUrl && videoUrl.trim() !== '') {
+                const video = document.getElementById('school-video');
+                const placeholder = document.getElementById('video-placeholder');
+                
+                // تبدیل لینک یوتیوب به فرمت embed
+                let embedUrl = videoUrl;
+                if (videoUrl.includes('youtube.com/watch?v=')) {
+                    const videoId = videoUrl.split('v=')[1].split('&')[0];
+                    embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                } else if (videoUrl.includes('youtu.be/')) {
+                    const videoId = videoUrl.split('youtu.be/')[1].split('?')[0];
+                    embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                }
+                
+                video.src = embedUrl;
+                video.style.display = 'block';
+                placeholder.style.display = 'none';
+            }
+        }
+
         // تابع نمایش عکس - برای تغییر عکس، URL را در کد تغییر دهید
         function showImage(imageUrl) {
             if (imageUrl && imageUrl.trim() !== '') {
@@ -622,6 +707,13 @@
                 img.style.display = 'block';
                 placeholder.style.display = 'none';
             }
+        }
+
+        // برای نمایش ویدیو، URL ویدیو را اینجا قرار دهید:
+        const videoUrl = ""; // URL ویدیو خود را اینجا وارد کنید
+        
+        if (videoUrl) {
+            showVideo(videoUrl);
         }
 
         // برای نمایش عکس، URL عکس را اینجا قرار دهید:
@@ -666,7 +758,10 @@
             dialog.innerHTML = `
                 <div style="color: #333; font-size: 18px; margin-bottom: 20px; font-weight: bold;">🔐 ورود به بخش مدیران</div>
                 <div style="color: #666; font-size: 14px; margin-bottom: 15px;">لطفاً رمز عبور را وارد کنید:</div>
-                <input type="password" id="management-password" placeholder="رمز عبور" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; margin-bottom: 20px; box-sizing: border-box; text-align: center;">
+                <div style="position: relative; margin-bottom: 20px;">
+                    <input type="password" id="management-password" placeholder="رمز عبور" style="width: 100%; padding: 12px 45px 12px 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; text-align: center;">
+                    <button type="button" id="toggle-password" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 18px; color: #666; padding: 0; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;">👁️</button>
+                </div>
                 <div style="margin-bottom: 20px;">
                     <button id="login-btn" style="background: #4CAF50; color: white; padding: 12px 25px; border: none; border-radius: 8px; margin: 0 5px; cursor: pointer; font-weight: bold; font-size: 14px;">ورود</button>
                     <button id="cancel-login-btn" style="background: #f44336; color: white; padding: 12px 25px; border: none; border-radius: 8px; margin: 0 5px; cursor: pointer; font-weight: bold; font-size: 14px;">لغو</button>
@@ -677,7 +772,19 @@
             document.body.appendChild(overlay);
 
             const passwordInput = document.getElementById('management-password');
+            const toggleButton = document.getElementById('toggle-password');
             passwordInput.focus();
+
+            // عملکرد دکمه نمایش/مخفی کردن رمز
+            toggleButton.onclick = () => {
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    toggleButton.textContent = '😑';
+                } else {
+                    passwordInput.type = 'password';
+                    toggleButton.textContent = '😐';
+                }
+            };
 
             document.getElementById('login-btn').onclick = () => {
                 const enteredPassword = passwordInput.value;
@@ -745,6 +852,28 @@
         }
 
         function addManagementControls() {
+            // دکمه تغییر ویدیو
+            const videoContainer = document.querySelector('.video-container');
+            const videoEditBtn = document.createElement('button');
+            videoEditBtn.id = 'edit-video-btn';
+            videoEditBtn.innerHTML = '🎬 تغییر ویدیو';
+            videoEditBtn.style.cssText = `
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                background: #9C27B0;
+                color: white;
+                padding: 8px 12px;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 12px;
+                font-weight: bold;
+                z-index: 10;
+            `;
+            videoEditBtn.onclick = editVideo;
+            videoContainer.appendChild(videoEditBtn);
+
             // دکمه تغییر عکس
             const imageContainer = document.querySelector('.image-container');
             const imageEditBtn = document.createElement('button');
@@ -772,6 +901,10 @@
         }
 
         function removeManagementControls() {
+            // حذف دکمه تغییر ویدیو
+            const videoEditBtn = document.getElementById('edit-video-btn');
+            if (videoEditBtn) videoEditBtn.remove();
+
             // حذف دکمه تغییر عکس
             const imageEditBtn = document.getElementById('edit-image-btn');
             if (imageEditBtn) imageEditBtn.remove();
@@ -880,6 +1013,73 @@
             };
         }
 
+        function editVideo() {
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                z-index: 2000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+
+            const dialog = document.createElement('div');
+            dialog.className = 'management-dialog';
+            dialog.style.cssText = `
+                background: white;
+                padding: 30px;
+                border-radius: 12px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                text-align: center;
+                max-width: 500px;
+                margin: 20px;
+                width: 90%;
+            `;
+
+            dialog.innerHTML = `
+                <div style="color: #333; font-size: 18px; margin-bottom: 20px; font-weight: bold;">🎬 تغییر ویدیو</div>
+                <div style="color: #666; font-size: 14px; margin-bottom: 15px; text-align: right;">URL ویدیو جدید را وارد کنید (یوتیوب یا سایر پلتفرم‌ها):</div>
+                <input type="url" id="new-video-url" placeholder="https://www.youtube.com/watch?v=..." style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; margin-bottom: 20px; box-sizing: border-box; direction: ltr; text-align: left;">
+                <div style="margin-bottom: 20px;">
+                    <button id="save-video-btn" style="background: #4CAF50; color: white; padding: 12px 25px; border: none; border-radius: 8px; margin: 0 5px; cursor: pointer; font-weight: bold; font-size: 14px;">ذخیره</button>
+                    <button id="cancel-video-btn" style="background: #f44336; color: white; padding: 12px 25px; border: none; border-radius: 8px; margin: 0 5px; cursor: pointer; font-weight: bold; font-size: 14px;">لغو</button>
+                </div>
+                <div style="color: #888; font-size: 12px; text-align: right;">
+                    نکته: لینک‌های یوتیوب به صورت خودکار تبدیل می‌شوند
+                </div>
+            `;
+
+            overlay.appendChild(dialog);
+            document.body.appendChild(overlay);
+
+            const urlInput = document.getElementById('new-video-url');
+            urlInput.focus();
+
+            document.getElementById('save-video-btn').onclick = () => {
+                const newVideoUrl = urlInput.value.trim();
+                if (newVideoUrl) {
+                    showVideo(newVideoUrl);
+                    showInlineMessage('ویدیو با موفقیت تغییر یافت!', 'success');
+                }
+                document.body.removeChild(overlay);
+            };
+
+            document.getElementById('cancel-video-btn').onclick = () => {
+                document.body.removeChild(overlay);
+            };
+
+            overlay.onclick = (e) => {
+                if (e.target === overlay) {
+                    document.body.removeChild(overlay);
+                }
+            };
+        }
+
         function editText(element, title) {
             const overlay = document.createElement('div');
             overlay.style.cssText = `
@@ -944,21 +1144,68 @@
             };
         }
 
-        // اضافه کردن انیمیشن‌های CSS
+        // اضافه کردن انیمیشن‌های CSS بهبود یافته
         const style = document.createElement('style');
         style.textContent = `
             @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
+                from { 
+                    transform: translateX(100%) scale(0.9); 
+                    opacity: 0; 
+                }
+                to { 
+                    transform: translateX(0) scale(1); 
+                    opacity: 1; 
+                }
             }
             @keyframes slideOut {
-                from { transform: translateX(0); opacity: 1; }
-                to { transform: translateX(100%); opacity: 0; }
+                from { 
+                    transform: translateX(0) scale(1); 
+                    opacity: 1; 
+                }
+                to { 
+                    transform: translateX(100%) scale(0.9); 
+                    opacity: 0; 
+                }
+            }
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
+            .header, .video-section, .sidebar-box {
+                animation: fadeInUp 0.6s ease-out;
+            }
+            
+            .sidebar-box:nth-child(1) { animation-delay: 0.1s; }
+            .sidebar-box:nth-child(2) { animation-delay: 0.2s; }
+            .sidebar-box:nth-child(3) { animation-delay: 0.3s; }
+            .sidebar-box:nth-child(4) { animation-delay: 0.4s; }
+            
+            /* اسکرول بار سفارشی */
+            ::-webkit-scrollbar {
+                width: 8px;
+            }
+            ::-webkit-scrollbar-track {
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 10px;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-radius: 10px;
+            }
+            ::-webkit-scrollbar-thumb:hover {
+                background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
             }
         `;
         document.head.appendChild(style);
 
 
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f5af359680dc52',t:'MTc2MDU5ODA4MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98fd6ca223fd5d40',t:'MTc2MDY3OTI0MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
