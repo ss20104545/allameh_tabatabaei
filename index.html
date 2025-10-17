@@ -393,17 +393,14 @@
             <div class="sidebar-box occasions">
                 <h2 class="box-title">مناسبت‌ها</h2>
                 <div class="box-content">
-                    • هفته دفاع مقدس<br>
-                    • روز معلم<br>
-                    • هفته کتاب و کتابخوانی<br>
-                    • جشن یلدا
+                    • روز نسل کش*ی کودکان و زنان فلسطین
                 </div>
             </div>
 
             <div class="sidebar-box school-news">
                 <h2 class="box-title">اخبار مدرسه</h2>
                 <div class="box-content">
-                    • اتخابات انجن اولیا و مربیان
+                    • انتخابات انجمن اولیا و مربیان
                 </div>
             </div>
 
@@ -411,8 +408,8 @@
                 <h2 class="box-title">اعضای کادر اجرایی</h2>
                 <div class="box-content">
                     • مدیر مدرسه: آقای نریمانی<br>
-                    • معاون آموزشی:آقای وتویی<br>
-                    • معاون پرورشی: آقای صالحی<br>
+                    • معاون آموزشی: آقای وتویی<br>
+                    • معاون پرورشی: آقای صالحی
                 </div>
             </div>
 
@@ -674,20 +671,26 @@
             };
         }
 
-        // تابع نمایش ویدیو
+        // تابع نمایش ویدیو - پشتیبانی از آپارات
         function showVideo(videoUrl) {
             if (videoUrl && videoUrl.trim() !== '') {
                 const video = document.getElementById('school-video');
                 const placeholder = document.getElementById('video-placeholder');
                 
-                // تبدیل لینک یوتیوب به فرمت embed
                 let embedUrl = videoUrl;
+                
+                // تبدیل لینک یوتیوب به فرمت embed
                 if (videoUrl.includes('youtube.com/watch?v=')) {
                     const videoId = videoUrl.split('v=')[1].split('&')[0];
                     embedUrl = `https://www.youtube.com/embed/${videoId}`;
                 } else if (videoUrl.includes('youtu.be/')) {
                     const videoId = videoUrl.split('youtu.be/')[1].split('?')[0];
                     embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                }
+                // تبدیل لینک آپارات به فرمت embed
+                else if (videoUrl.includes('aparat.com/v/')) {
+                    const videoId = videoUrl.split('/v/')[1].split('?')[0];
+                    embedUrl = `https://www.aparat.com/video/video/embed/videohash/${videoId}/vt/frame`;
                 }
                 
                 video.src = embedUrl;
@@ -710,10 +713,10 @@
 
         // داده‌های وب‌سایت
         let websiteData = {
-            videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-            imageUrl: 'https://abrehamrahi.ir/o/public/2PP4SERD/',
-            occasionsText: '•روز نسل کش*ی کودکان و زنان فلسطینی',
-            schoolNewsText: '•انتخابات انجن اولیا و مربیان',
+            videoUrl: 'https://www.aparat.com/v/damhi02',
+            imageUrl: 'https://alameh.ir/wp-content/uploads/2024/02/%D9%85%D8%AC%D8%AA%D9%85%D8%B9-%D9%81%D8%B1%D9%87%D9%86%DA%AF%DB%8C-%D9%87%D9%86%D8%B1%DB%8C-%D8%B9%D9%84%D8%A7%D9%85%D9%87-%D8%B7%D8%A8%D8%A7%D8%B7%D8%A8%D8%A7%DB%8C%DB%8C.jpg',
+            occasionsText: '• روز نسل کش*ی کودکان و زنان فلسطین',
+            schoolNewsText: '• انتخابات انجمن اولیا و مربیان',
             staffText: '• مدیر مدرسه: آقای نریمانی<br>• معاون آموزشی: آقای وتویی<br>• معاون پرورشی: آقای صالحی',
             educationNewsText: '• تغییرات تقویم آموزشی<br>• دستورالعمل‌های جدید<br>• برنامه‌های آموزشی ویژه<br>• اطلاعیه‌های مهم وزارت'
         };
@@ -730,21 +733,18 @@
             const savedData = localStorage.getItem('schoolWebsiteData');
             if (savedData) {
                 websiteData = JSON.parse(savedData);
-                
-                // اعمال داده‌های ذخیره شده
-                if (websiteData.videoUrl) {
-                    showVideo(websiteData.videoUrl);
-                }
-                if (websiteData.imageUrl) {
-                    showImage(websiteData.imageUrl);
-                }
-                
-                // بارگذاری متن‌ها
-                loadTextData();
-            } else {
-                // بارگذاری داده‌های پیش‌فرض
-                loadTextData();
             }
+            
+            // اعمال داده‌های پیش‌فرض یا ذخیره شده
+            if (websiteData.videoUrl) {
+                showVideo(websiteData.videoUrl);
+            }
+            if (websiteData.imageUrl) {
+                showImage(websiteData.imageUrl);
+            }
+            
+            // بارگذاری متن‌ها
+            loadTextData();
         }
 
         // بارگذاری متن‌ها
@@ -774,12 +774,15 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadData();
         });
-        loadData(); // بارگذاری داده‌ها
-
-        // تابع ساده برای تغییر محتوا - فقط در کد قابل تغییر
-        // برای تغییر ویدیو، URL را در خط 718 تغییر دهید
-        // برای تغییر عکس، URL را در خط 719 تغییر دهید
-        // برای تغییر متن‌ها، محتوای خطوط 720-723 را تغییر دهید
+        
+        // اجرای فوری برای نمایش محتوا
+        if (websiteData.videoUrl) {
+            showVideo(websiteData.videoUrl);
+        }
+        if (websiteData.imageUrl) {
+            showImage(websiteData.imageUrl);
+        }
+        loadTextData();
 
         // اضافه کردن انیمیشن‌های CSS بهبود یافته
         const style = document.createElement('style');
@@ -842,7 +845,6 @@
         `;
         document.head.appendChild(style);
 
-
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98fddd53d7c41e33',t:'MTc2MDY4Mzg1Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98fe221eb323d25d',t:'MTc2MDY4NjY3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
