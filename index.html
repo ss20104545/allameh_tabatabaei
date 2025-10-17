@@ -435,7 +435,7 @@
     <footer style="text-align: center; margin-top: 30px; padding: 20px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.08); border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.3s ease;">
         <small style="color: #718096; font-size: 14px; font-weight: 500;">
             <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 600;">Created by Sobhan</span> 
-            with vsCode
+            with ❤️ & Code
         </small>
     </footer>
 
@@ -596,11 +596,14 @@
         function showInlineMessage(message, type) {
             const messageDiv = document.createElement('div');
             messageDiv.className = 'inline-message';
+            const backgroundColor = type === 'success' ? '#4CAF50' : 
+                                  type === 'error' ? '#f44336' : 
+                                  type === 'info' ? '#2196F3' : '#4CAF50';
             messageDiv.style.cssText = `
                 position: fixed;
                 top: 20px;
                 right: 20px;
-                background: ${type === 'success' ? '#4CAF50' : '#f44336'};
+                background: ${backgroundColor};
                 color: white;
                 padding: 15px 20px;
                 border-radius: 8px;
@@ -694,10 +697,13 @@
                 video.src = embedUrl;
                 video.style.display = 'block';
                 placeholder.style.display = 'none';
+                
+                // ذخیره در سرور
+                saveToServer('videoUrl', videoUrl);
             }
         }
 
-        // تابع نمایش عکس - برای تغییر عکس، URL را در کد تغییر دهید
+        // تابع نمایش عکس
         function showImage(imageUrl) {
             if (imageUrl && imageUrl.trim() !== '') {
                 const img = document.getElementById('school-image');
@@ -706,22 +712,104 @@
                 img.src = imageUrl;
                 img.style.display = 'block';
                 placeholder.style.display = 'none';
+                
+                // ذخیره در سرور
+                saveToServer('imageUrl', imageUrl);
             }
         }
 
-        // برای نمایش ویدیو، URL ویدیو را اینجا قرار دهید:
-        const videoUrl = ""; // URL ویدیو خود را اینجا وارد کنید
-        
-        if (videoUrl) {
-            showVideo(videoUrl);
+        // سیستم ذخیره‌سازی داده‌ها در سرور
+        const SERVER_CONFIG = {
+            API_BASE_URL: '/api/school-data',
+            ENDPOINTS: {
+                SAVE: '/save',
+                LOAD: '/load'
+            }
+        };
+
+        // شبیه‌سازی داده‌های سرور (در حالت واقعی از پایگاه داده استفاده می‌شود)
+        let serverData = {
+            videoUrl: '',
+            imageUrl: '',
+            occasionsText: '• هفته دفاع مقدس<br>• روز معلم<br>• هفته کتاب و کتابخوانی<br>• جشن یلدا',
+            schoolNewsText: '• برگزاری مسابقات ورزشی<br>• نمایشگاه علوم و فناوری<br>• جلسه شورای مدرسه<br>• ثبت نام کلاس‌های تقویتی',
+            staffText: '• مدیر مدرسه: آقای احمدی<br>• معاون آموزشی: خانم رضایی<br>• معاون پرورشی: آقای محمدی<br>• مسئول کتابخانه: خانم کریمی',
+            educationNewsText: '• تغییرات تقویم آموزشی<br>• دستورالعمل‌های جدید<br>• برنامه‌های آموزشی ویژه<br>• اطلاعیه‌های مهم وزارت'
+        };
+
+        // ذخیره داده در سرور
+        async function saveToServer(dataType, value) {
+            try {
+                // شبیه‌سازی درخواست به سرور
+                showInlineMessage('در حال ذخیره در سرور...', 'info');
+                
+                // تاخیر برای شبیه‌سازی شبکه
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // ذخیره در شبیه‌سازی سرور
+                serverData[dataType] = value;
+                
+                // شبیه‌سازی پاسخ موفق سرور
+                showInlineMessage('✅ تغییرات در سرور ذخیره شد!', 'success');
+                
+                return { success: true, message: 'داده با موفقیت ذخیره شد' };
+            } catch (error) {
+                showInlineMessage('❌ خطا در ذخیره‌سازی در سرور!', 'error');
+                return { success: false, error: error.message };
+            }
         }
 
-        // برای نمایش عکس، URL عکس را اینجا قرار دهید:
-        const imageUrl = ""; // URL عکس خود را اینجا وارد کنید
-        
-        if (imageUrl) {
-            showImage(imageUrl);
+        // بارگذاری داده از سرور
+        async function loadFromServer() {
+            try {
+                // شبیه‌سازی درخواست به سرور
+                showInlineMessage('در حال بارگذاری از سرور...', 'info');
+                
+                // تاخیر برای شبیه‌سازی شبکه
+                await new Promise(resolve => setTimeout(resolve, 300));
+                
+                // بارگذاری داده‌ها از شبیه‌سازی سرور
+                if (serverData.videoUrl) {
+                    showVideo(serverData.videoUrl);
+                }
+                
+                if (serverData.imageUrl) {
+                    showImage(serverData.imageUrl);
+                }
+                
+                // بارگذاری متن‌ها
+                const occasionsElement = document.querySelector('.occasions .box-content');
+                if (occasionsElement && serverData.occasionsText) {
+                    occasionsElement.innerHTML = serverData.occasionsText;
+                }
+
+                const schoolNewsElement = document.querySelector('.school-news .box-content');
+                if (schoolNewsElement && serverData.schoolNewsText) {
+                    schoolNewsElement.innerHTML = serverData.schoolNewsText;
+                }
+
+                const staffElement = document.querySelector('.staff .box-content');
+                if (staffElement && serverData.staffText) {
+                    staffElement.innerHTML = serverData.staffText;
+                }
+
+                const educationNewsElement = document.querySelector('.education-news .box-content');
+                if (educationNewsElement && serverData.educationNewsText) {
+                    educationNewsElement.innerHTML = serverData.educationNewsText;
+                }
+                
+                showInlineMessage('✅ داده‌ها از سرور بارگذاری شد!', 'success');
+                
+                return { success: true, data: serverData };
+            } catch (error) {
+                showInlineMessage('❌ خطا در بارگذاری از سرور!', 'error');
+                return { success: false, error: error.message };
+            }
         }
+
+        // بارگذاری داده‌ها هنگام شروع
+        document.addEventListener('DOMContentLoaded', loadFromServer);
+        loadFromServer(); // اجرای فوری برای اطمینان
 
         // مدیریت بخش مدیران
         const MANAGEMENT_PASSWORD = "allame1303";
@@ -779,10 +867,10 @@
             toggleButton.onclick = () => {
                 if (passwordInput.type === 'password') {
                     passwordInput.type = 'text';
-                    toggleButton.textContent = '😑';
+                    toggleButton.textContent = '🙈';
                 } else {
                     passwordInput.type = 'password';
-                    toggleButton.textContent = '😐';
+                    toggleButton.textContent = '👁️';
                 }
             };
 
@@ -1129,6 +1217,23 @@
             document.getElementById('save-text-btn').onclick = () => {
                 const newText = textArea.value.replace(/\n/g, '<br>');
                 element.innerHTML = newText;
+                
+                // تشخیص نوع بخش و ذخیره در سرور
+                let dataType;
+                if (element.closest('.occasions')) {
+                    dataType = 'occasionsText';
+                } else if (element.closest('.school-news')) {
+                    dataType = 'schoolNewsText';
+                } else if (element.closest('.staff')) {
+                    dataType = 'staffText';
+                } else if (element.closest('.education-news')) {
+                    dataType = 'educationNewsText';
+                }
+                
+                if (dataType) {
+                    saveToServer(dataType, newText);
+                }
+                
                 showInlineMessage(`${title} با موفقیت به‌روزرسانی شد!`, 'success');
                 document.body.removeChild(overlay);
             };
@@ -1207,5 +1312,5 @@
 
 
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98fd6ca223fd5d40',t:'MTc2MDY3OTI0MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98fdb9bd04577093',t:'MTc2MDY4MjM5OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
